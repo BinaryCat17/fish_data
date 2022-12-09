@@ -14,18 +14,23 @@ def run_daemon(f, *args):
 
 
 class Monitor:
-    def __init__(self, width, height):
+    def __init__(self, width, height, enable=True):
         self.imgs = []
         self.width = width
         self.height = height
 
-    def show(self, idx, img):
-        if idx < len(self.imgs):
-            self.imgs[idx] = img
-        else:
-            self.imgs.append(img)
+    def show(self, idx):
+        def do_show(img):
+            if idx < len(self.imgs):
+                self.imgs[idx] = img
+            else:
+                self.imgs.append(img)
+        return do_show
 
     def update(self):
+        if not self.enable:
+            return
+
         im = np.concatenate(self.imgs, axis=0)
         im = cv2.resize(im, (self.width, self.height))
         cv2.imshow('frames', im)

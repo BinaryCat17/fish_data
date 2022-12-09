@@ -36,7 +36,7 @@ class App:
                 s[0].capture(now)
 
             for u in self.updaters:
-                u()
+                u.update()
 
             if (now - self.backup_time).total_seconds() > self.seconds:
                 self._backup(now)
@@ -67,19 +67,19 @@ if __name__ == '__main__':
     serializer = Serializer()
     app = App(30)
 
-    monitor = Monitor(480, 540)
-    app.add_updater(monitor.update)
+    monitor = Monitor(480, 540, False)
+    app.add_updater(monitor)
 
     # app.add_sensor(WaterSensor('COM5'), 'water', 'txt')
 
     app.add_sensor(
         Video(1, (1920, 1080), 30, cv2.CAP_DSHOW,
-              show=lambda i: monitor.show(0, i)),
+              show=monitor.show(0)),
         'webcam', 'mp4')
 
     app.add_sensor(
         Video('rtsp://admin:@192.168.88.10/1', (1920, 1080), 20,
-              show=lambda i: monitor.show(1, i)),
+              show=monitor.show(1)),
         'ip_cam', 'mp4')
 
     app.run()
